@@ -15,7 +15,6 @@
     "@fluentui/react-icons": "^2.0.258?bundle-deps"
   }</script>
   <script>
-
     function safeAppendRootContent(content) {
       const root = document.getElementById("root");
       if (root) {
@@ -34,6 +33,7 @@
 
       const edit = new URLSearchParams(location.search).get("edit");
       if (edit) {
+        console.log("Applying edit", edit);
         const babelScript = document.querySelector("script[type='text/babel']");
         babelScript.textContent = decodeURIComponent(edit);
         const mutableUrl = new URL(location);
@@ -127,7 +127,8 @@
             <label for="cmd"><code>Command</code></label>
             <br/>
             <input id="cmd" type="text" />
-            <pre>[w]rite<br/>[e]dit [prompt]</pre>
+            <pre>[w]rite (filename)<br/>[e]dit [prompt]<br/>[o]pen</pre>
+            <pre id="output"></pre>
             <button>Summit</button>
           </form>
         `;
@@ -135,24 +136,28 @@
           e.preventDefault();
           const input = e.target?.closest("dialog").querySelector("input").value.trim();
 
-          if (input === "w") {
+          if (input === "w" || input.startsWith("w ")) {
+            const optionalFilename = input.slice(2).trim();
+            const downloadFilename = optionalFilename ? `${optionalFilename}.html` : `artifact-${new Date().toISOString()}.html`;
+
             [...document.head.children].forEach(child => cache.headChildren.includes(child) || child.remove());
             document.body.innerHTML = cache.bodyInnerHTML;
 
             const thisHtmlFileContent = new Blob([document.documentElement.outerHTML], { type: "text/html" });
             const downloadLink = document.createElement("a");
             downloadLink.href = URL.createObjectURL(thisHtmlFileContent);
-            downloadLink.download = "index.html";
+            downloadLink.download = downloadFilename;
             downloadLink.click();
             location.reload();
+          } else if (input === "o") {
+            // TODO open file picker to load file
           } else if (input.startsWith("e ")) {
-            const newScriptContent = `console.log("hello world!!")`;
-            const encodedScriptContent = encodeURIComponent((newScriptContent));
-
+            modal.querySelector("#output").textContent += "Authenticating...\n";
             const [aid, openai] = await Promise.all([
               import("https://esm.sh/@azure/identity?bundle-deps"),
               import("https://esm.sh/openai?bundle-deps")
             ]);
+            modal.querySelector("#output").textContent += "Generating...\n";
 
             const credential = new aid.InteractiveBrowserCredential({
               tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
@@ -161,18 +166,39 @@
             const azureADTokenProvider = aid.getBearerTokenProvider(credential, []);
             const client = new openai.AzureOpenAI({ azureADTokenProvider, apiVersion: "2024-07-01-preview", endpoint: "https://proto-api.azure-api.net/" });
 
+            const babelScript = document.querySelector("script[type='text/babel']");
+            const currentScriptContent = babelScript.textContent; // TODO clean up indentation
+
+            const messages = [
+              {
+                role: "system", content: `Edit the following React program based on user's goal or instruction.
+
+<script type="text/jsx">                  
+${currentScriptContent.trim()}
+<script>
+
+Think before you respond. Use this format:
+
+<thoughts>reason about the task...</thoughts>
+<script type="text/jsx">Your implementation here...<` + `/script>
+  `.trim()
+              }, {
+                role: "user", content: input.slice(2)
+              }
+            ];
 
             const response = await client.chat.completions
               .create({
-                messages: [{ role: "user", content: input.slice(2) }],
+                messages,
                 model: "gpt-4o",
+                max_tokens: 2000,
               })
               .catch((e) => e);
 
-            console.log(response);
+            const dom = new DOMParser().parseFromString(response?.choices?.[0]?.message?.content, "text/html");
+            const newCode = dom.querySelector("script[type='text/jsx']")?.textContent;
 
-
-            //location.assign(`?edit=${encodedScriptContent}`);
+            location.assign(`?edit=${encodeURIComponent(newCode)}`);
           }
         };
         document.body.appendChild(modal);
