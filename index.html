@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fluent Sandbox</title>
+  <title>Auto IDE</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBjbGlwLXBhdGg9InVybCgjYSkiPjxwYXRoIGZpbGw9IiMwQjBCMEIiIGQ9Ik0wIDBoMzJ2MzJIMHoiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjExIiByPSI1IiBmaWxsPSIjRTQzOTIxIi8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxMiIgcj0iOC41IiBzdHJva2U9IiNmZmYiLz48Y2lyY2xlIGN4PSIxNiIgY3k9IjEyIiByPSI4LjUiIHN0cm9rZT0iI0M0QzRDNCIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjEyLjUiIHN0cm9rZT0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjEyLjUiIHN0cm9rZT0iI0M0QzRDNCIvPjwvZz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMzJ2MzJIMHoiLz48L2NsaXBQYXRoPjwvZGVmcz48L3N2Zz4=" />
   <link rel="preconnect" href="https://esm.sh" />
   <script id="dependencies" type="application/json">{
     "react": "^18.3.1",
@@ -152,7 +154,6 @@
               import("https://esm.sh/openai?bundle-deps")
             ]);
 
-            debugger;
             const credential = new aid.InteractiveBrowserCredential({
               tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
               clientId: "6e4c509e-2b65-40dc-b461-beb2c824f63a",

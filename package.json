@@ -1,0 +1,12 @@
+{
+  "name": "auto-ide",
+  "version": "1.0.0",
+  "description": "## Get started",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx http-server -p 5200 -a localhost"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
