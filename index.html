@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluent Sandbox</title>
+  <link rel="preconnect" href="https://esm.sh" />
+  <script id="dependencies" type="application/json">{
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1?bundle-deps",
+    "@fluentui/react-components": "^9.54.13?bundle-deps",
+    "@fluentui/react-icons": "^2.0.258?bundle-deps"
+  }</script>
+  <script>
+
+    function safeAppendRootContent(content) {
+      const root = document.getElementById("root");
+      if (root) {
+        let pre = root.querySelector("pre");
+        if (!pre) {
+          pre = document.createElement("pre");
+          root.appendChild(pre);
+        }
+        pre.innerHTML = `${pre.innerHTML}${content}<br/>`;
+      }
+    }
+
+    const cache = {};
+
+    document.onreadystatechange = () => {
+
+      const edit = new URLSearchParams(location.search).get("edit");
+      if (edit) {
+        const babelScript = document.querySelector("script[type='text/babel']");
+        babelScript.textContent = decodeURIComponent(edit);
+        const mutableUrl = new URL(location);
+        // remove the edit query param
+        mutableUrl.search = "";
+        history.replaceState({}, document.title, mutableUrl);
+      }
+
+      cache.headChildren = Array.from(document.head.children);
+      cache.bodyInnerHTML = document.body.innerHTML;
+
+      if (document.readyState === "complete") {
+
+        safeAppendRootContent(`
+╔══════════╗
+║ Auto IDE ║
+╚══════════╝
+        `.trim());
+        safeAppendRootContent("Scanning dependencies...");
+
+        // setup import map
+        const packageJson = JSON.parse(document.querySelector("#dependencies")?.textContent ?? "{}");
+        const packageImportEntries = Object.entries(packageJson).map(([name, version]) => [
+          name,
+          `https://esm.sh/${name}@${version}`,
+        ]);
+
+        const babelText = document.querySelector("script[type='text/babel']").textContent;
+        const importFromPattern = /^\s*import(?:.|\n)*?(?:from)?\s+['"](.+)['"]/gm;
+        const allImportMatches = [...babelText.matchAll(importFromPattern)];
+        const allImportNames = allImportMatches.map((m) => m[1]);
+
+        // @scope/package-name -> [@scope/package-name]
+        // package-name/subpath -> [base-package-name, /subpath]
+        // package-name -> [package-name]
+        const normalizedPackageNamePattern = /^(@[^/]+\/[^/]+|[^/]+)/;
+        const normalizedImportEntries = (allImportNames.map((name) => {
+          const match = name.match(normalizedPackageNamePattern);
+          if (!match) throw new Error(`Invalid package name: ${name}`);
+          const packageName = match[1];
+          const packageSuffix = name.slice(packageName.length);
+          const lockedVersion = packageJson[packageName] ? `@${packageJson[packageName]}` : "";
+          return [name, `https://esm.sh/${packageName}${lockedVersion}${packageSuffix}`];
+        }));
+
+
+        const imports = {
+          ...Object.fromEntries(normalizedImportEntries),
+          ...Object.fromEntries(packageImportEntries),
+        };
+
+        console.log(`[imports]`, imports);
+        Object.entries(imports).forEach((entry) => {
+          safeAppendRootContent(`Install ${entry[1]}`);
+        });
+        const importMapsScript = document.createElement("script");
+        importMapsScript.type = "importmap";
+        importMapsScript.textContent = JSON.stringify({ imports: imports }, null, 2);
+        document.head.appendChild(importMapsScript);
+
+        // transpile and run
+        import("https://esm.sh/esbuild-wasm@0.23.1").then(async (esbuild) => {
+          performance.mark("esbuild-wasm:imported");
+          await esbuild.initialize({
+            wasmURL: "https://esm.sh/esbuild-wasm@0.23.1/esbuild.wasm",
+          });
+
+          safeAppendRootContent("Compiling...");
+          // build file content map
+          const sourceScripts = document.querySelectorAll(`script[type="text/babel"]`);
+          sourceScripts.forEach(async (sourceScript, index) => {
+            const result = await esbuild.transform(sourceScript.textContent, { loader: "tsx" });
+            const transpiledScript = document.createElement("script");
+            transpiledScript.textContent = result.code;
+            transpiledScript.type = "module";
+            sourceScript.insertAdjacentElement("afterend", transpiledScript);
+            safeAppendRootContent(`Rendering... ${index + 1} of ${sourceScripts.length}`);
+          });
+        });
+      }
+    };
+
+    document.addEventListener("keydown", (e) => {
+      // handle shift + :
+      if (e.shiftKey && e.key === ":") {
+        if (e.target?.closest("input,textarea")) return;
+        e.preventDefault();
+        const modal = document.createElement("dialog");
+        modal.innerHTML = `
+          <form>
+            <label for="cmd"><code>Command</code></label>
+            <br/>
+            <input id="cmd" type="text" />
+            <pre>[w]rite<br/>[e]dit [prompt]</pre>
+            <button>Summit</button>
+          </form>
+        `;
+        modal.querySelector("form").onsubmit = async (e) => {
+          e.preventDefault();
+          const input = e.target?.closest("dialog").querySelector("input").value.trim();
+
+          if (input === "w") {
+            [...document.head.children].forEach(child => cache.headChildren.includes(child) || child.remove());
+            document.body.innerHTML = cache.bodyInnerHTML;
+
+            const thisHtmlFileContent = new Blob([document.documentElement.outerHTML], { type: "text/html" });
+            const downloadLink = document.createElement("a");
+            downloadLink.href = URL.createObjectURL(thisHtmlFileContent);
+            downloadLink.download = "index.html";
+            downloadLink.click();
+            location.reload();
+          } else if (input.startsWith("e ")) {
+            const newScriptContent = `console.log("hello world!!")`;
+            const encodedScriptContent = encodeURIComponent((newScriptContent));
+
+            const [aid, openai] = await Promise.all([
+              import("https://esm.sh/@azure/identity?bundle-deps"),
+              import("https://esm.sh/openai?bundle-deps")
+            ]);
+
+            debugger;
+            const credential = new aid.InteractiveBrowserCredential({
+              tenantId: "72f988bf-86f1-41af-91ab-2d7cd011db47",
+              clientId: "6e4c509e-2b65-40dc-b461-beb2c824f63a",
+            });
+            const azureADTokenProvider = aid.getBearerTokenProvider(credential, []);
+            const client = new openai.AzureOpenAI({ azureADTokenProvider, apiVersion: "2024-07-01-preview", endpoint: "https://proto-api.azure-api.net/" });
+
+
+            const response = await client.chat.completions
+              .create({
+                messages: [{ role: "user", content: input.slice(2) }],
+                model: "gpt-4o",
+              })
+              .catch((e) => e);
+
+            console.log(response);
+
+
+            //location.assign(`?edit=${encodedScriptContent}`);
+          }
+        };
+        document.body.appendChild(modal);
+        modal.showModal();
+      }
+    });
+
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    import React, { useState } from 'react'
+    import ReactDOM from 'react-dom/client'
+    import { FluentProvider, webLightTheme, Button } from '@fluentui/react-components';
+    import { AddRegular } from '@fluentui/react-icons';
+
+    import { fromEvent } from 'rxjs';
+
+    fromEvent(document, 'click').subscribe(() => console.log('Clicked!'));
+
+
+    function App() {
+      const [count, setCount] = useState(0)
+      return (
+        <div>
+          <p>Count: {count}</p>
+          <Button icon={<AddRegular />} onClick={() => setCount(count + 1)}>Increment</Button>
+        </div>
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(
+      <React.StrictMode>
+        <FluentProvider theme={webLightTheme}>
+          <App />
+        </FluentProvider>
+      </React.StrictMode>,
+    )
+  </script>
+</body>
+
+</html>
