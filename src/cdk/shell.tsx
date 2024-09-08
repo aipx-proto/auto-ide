@@ -1,7 +1,37 @@
-import { Button, Toolbar, ToolbarButton } from "@fluentui/react-components";
-import { EmojiSmileSlightRegular, PanelLeftContractRegular, SettingsRegular } from "@fluentui/react-icons";
+import { Button, Caption1Strong, Tab, TabList, Toolbar, ToolbarButton } from "@fluentui/react-components";
+import {
+  BeakerFilled,
+  BeakerRegular,
+  BoxMultipleFilled,
+  BoxMultipleRegular,
+  ChatMultipleFilled,
+  ChatMultipleRegular,
+  CodeBlockFilled,
+  CodeBlockRegular,
+  DatabaseSearchFilled,
+  DatabaseSearchRegular,
+  EmojiSmileSlightRegular,
+  HomeFilled,
+  HomeRegular,
+  PanelLeftContractRegular,
+  ScalesFilled,
+  ScalesRegular,
+  SettingsRegular,
+  ShieldTaskFilled,
+  ShieldTaskRegular,
+  bundleIcon,
+} from "@fluentui/react-icons";
 import React from "react";
 import styled, { createGlobalStyle } from "styled-components";
+
+const HomeAuto = bundleIcon(HomeFilled, HomeRegular);
+const BoxMultipleAuto = bundleIcon(BoxMultipleFilled, BoxMultipleRegular);
+const ChatMultipleAuto = bundleIcon(ChatMultipleFilled, ChatMultipleRegular);
+const CodeBlockAuto = bundleIcon(CodeBlockFilled, CodeBlockRegular);
+const BeakerAuto = bundleIcon(BeakerFilled, BeakerRegular);
+const DatabaseSearchAuto = bundleIcon(DatabaseSearchFilled, DatabaseSearchRegular);
+const ScalesAuto = bundleIcon(ScalesFilled, ScalesRegular);
+const ShieldTaskAuto = bundleIcon(ShieldTaskFilled, ShieldTaskRegular);
 
 export interface ShellProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Shell(props: ShellProps) {
@@ -15,7 +45,11 @@ export function Shell(props: ShellProps) {
 
 const ShellLayout = styled.div`
   height: 100%;
-  background-image: linear-gradient(103deg, rgba(255, 255, 255, 0.2) 10.04%, rgba(241, 153, 207, 0.2) 52.74%, rgba(159, 194, 238, 0.2) 60.55%);
+  background: linear-gradient(108deg, rgba(225, 237, 252, 0.2) 0%, rgba(159, 194, 238, 0.2) 99.79%), #fafafa;
+
+  /* Elevation/Light/Shadow 08 */
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.14), 0px 0px 2px 0px rgba(0, 0, 0, 0.12);
+
   display: grid;
   grid-template:
     "header header" auto
@@ -39,7 +73,7 @@ Shell.Header = (props: ShellHeaderProps) => {
   return (
     <HeaderLayout {...props}>
       <ToolbarLeft>
-        <Button icon={<PanelLeftContractRegular />} />
+        <Button appearance="subtle" icon={<PanelLeftContractRegular />} />
         <HomeLink href="#">
           <img
             width={18}
@@ -88,12 +122,50 @@ const HomeLink = styled.a`
 
 export interface ShellNavProps extends React.HTMLAttributes<HTMLDivElement> {}
 Shell.Nav = (props: ShellNavProps) => {
-  return <NavLayout {...props} />;
+  return (
+    <NavLayout {...props}>
+      <TabList defaultSelectedValue="home" vertical>
+        <Tab icon={<HomeAuto />} value="home">
+          Home
+        </Tab>
+        <Tab icon={<BoxMultipleAuto />} value="model-catalog">
+          Model catalog
+        </Tab>
+        <Tab icon={<ChatMultipleAuto />} value="playground">
+          Playgrounds
+        </Tab>
+        <IndentedCaption>Build and customize</IndentedCaption>
+        <Tab icon={<CodeBlockAuto />} value="code">
+          Code
+        </Tab>
+        <Tab icon={<BeakerAuto />} value="fine-tuning">
+          Fine-tuning
+        </Tab>
+        <IndentedCaption>Assess performance</IndentedCaption>
+        <Tab icon={<DatabaseSearchAuto />} value="tracing">
+          Tracing
+        </Tab>
+        <Tab icon={<ScalesAuto />} value="evaluation">
+          Evaluation
+        </Tab>
+        <Tab icon={<ShieldTaskAuto />} value="content-filters ">
+          Content filters
+        </Tab>
+      </TabList>
+    </NavLayout>
+  );
 };
 
 const NavLayout = styled.nav`
   grid-area: nav;
   overflow-y: auto;
+  padding-inline-start: 8px;
+  padding-block: 16px;
+`;
+
+const IndentedCaption = styled(Caption1Strong)`
+  margin-inline-start: 12px;
+  padding-block: 8px;
 `;
 
 export interface ShellMainProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -103,4 +175,8 @@ Shell.Main = (props: ShellMainProps) => {
 const MainLayout = styled.main`
   grid-area: main;
   overflow-y: auto;
+  background: white;
+  border-radius: 8px 0 0 0;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.14), 0px 0px 2px 0px rgba(0, 0, 0, 0.12);
 `;
