@@ -18,10 +18,10 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <FluentProvider style={{ display: "contents" }} theme={webLightTheme}>
+    <FluentProvider theme={webLightTheme}>
       <Shell>
-        <Shell.Header>Header</Shell.Header>
-        <Shell.Nav>Nav</Shell.Nav>
+        <Shell.Header />
+        <Shell.Nav />
         <Shell.Main>
           <App />
         </Shell.Main>

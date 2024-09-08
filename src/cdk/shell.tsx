@@ -66,6 +66,10 @@ const GlobalStyle = createGlobalStyle`
     html,body,#root {
       height: 100%;
     }
+
+    .fui-FluentProvider {
+      display: contents;
+    }
     `;
 
 export interface ShellHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
