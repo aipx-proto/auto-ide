@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "preview": "npm run build && npx http-server -p 5200 -a localhost",
+    "preview": "npx http-server -p 5200 -a localhost -c-1",
     "dev": "npm run build && vite",
     "build": "npm run build:cdk && npm run build:vm",
     "build:cdk": "esbuild src/cdk.ts --bundle --format=esm --sourcemap  --external:styled-components --external:react --external:@fluentui/react-icons --external:@fluentui/react-components --outfile=dist/cdk.js",
