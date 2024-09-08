@@ -14,9 +14,9 @@
     "@fluentui/react-components": "^9.54.13?bundle-deps",
     "@fluentui/react-icons": "^2.0.258?bundle-deps",
     "styled-components": "^6.1.13?bundle-deps",
-    "ai-studio-cdk": "^0.0.2?bundle-deps"
+    "ai-studio-cdk": "^0.0.4?bundle-deps"
   }</script>
-  <script src="./src/moldable.js"></script>
+  <script src="./dist/react-vm.js"></script>
 </head>
 
 <body>
@@ -43,7 +43,11 @@
       <React.StrictMode>
         <FluentProvider theme={webLightTheme}>
           <Shell>
-            <App />
+            <Shell.Header />
+            <Shell.Nav />
+            <Shell.Main>
+              <App />
+            </Shell.Main>
           </Shell>
         </FluentProvider>
       </React.StrictMode>,

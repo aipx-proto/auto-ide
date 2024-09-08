@@ -163,7 +163,8 @@ Shell.Nav = (props: ShellNavProps) => {
 const NavLayout = styled.nav`
   grid-area: nav;
   overflow-y: auto;
-  padding-inline-start: 8px;
+  scrollbar-gutter: stable;
+  padding-inline: 8px;
   padding-block: 16px;
 `;
 
@@ -179,6 +180,7 @@ Shell.Main = (props: ShellMainProps) => {
 const MainLayout = styled.main`
   grid-area: main;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   background: white;
   border-radius: 8px 0 0 0;
   border: 1px solid #e0e0e0;
