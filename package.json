@@ -1,12 +1,33 @@
 {
-  "name": "auto-ide",
-  "version": "1.0.0",
+  "name": "ai-studio-cdk",
+  "version": "0.0.1",
   "description": "## Get started",
-  "main": "index.js",
+  "main": "./dist/cdk.js",
+  "module": "./dist/cdk.js",
+  "exports": {
+    ".": {
+      "import": "./dist/cdk.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "npx http-server -p 5200 -a localhost"
+    "dev": "npx http-server -p 5200 -a localhost",
+    "dev:cdk": "vite",
+    "build:cdk": "esbuild src/cdk.ts --bundle --format=esm --sourcemap  --external:styled-components --external:react --external:@fluentui/react-icons --external:@fluentui/react-components --outfile=dist/cdk.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@fluentui/react-components": "^9.54.13",
+    "@fluentui/react-icons": "^2.0.258",
+    "@vitejs/plugin-react-swc": "^3.7.0",
+    "esbuild": "^0.23.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "styled-components": "^6.1.13",
+    "vite": "^5.4.3"
+  }
 }
