@@ -2,7 +2,7 @@ import { Button, FluentProvider, webLightTheme } from "@fluentui/react-component
 import { AddRegular } from "@fluentui/react-icons";
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { Shell } from "./cdk";
+import { AppShell } from "./cdk";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -19,13 +19,9 @@ function App() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <FluentProvider theme={webLightTheme}>
-      <Shell>
-        <Shell.Header />
-        <Shell.Nav />
-        <Shell.Main>
-          <App />
-        </Shell.Main>
-      </Shell>
+      <AppShell breadcrumbs={["Home", "Project", "Feature", "Area"]} activeItem="evaluation">
+        <App />
+      </AppShell>
     </FluentProvider>
   </React.StrictMode>
 );
