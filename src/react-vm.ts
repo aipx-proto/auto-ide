@@ -1,4 +1,4 @@
-import type { ReactVMErrorMessage } from "../typings/error";
+import type { ReactVMErrorMessage } from "./react-vm.types";
 
 // report any error to parent frame
 if (window.parent) {

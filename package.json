@@ -6,10 +6,12 @@
   "module": "./dist/cdk.js",
   "exports": {
     ".": {
-      "import": "./dist/cdk.js"
+      "import": "./dist/cdk.js",
+      "types": "./src/cdk.ts"
     },
     "./react-vm": {
-      "import": "./dist/react-vm.js"
+      "import": "./dist/react-vm.js",
+      "types": "./src/react-vm.types.ts"
     }
   },
   "files": [
