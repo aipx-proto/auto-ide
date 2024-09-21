@@ -1,12 +1,15 @@
+import type { ReactVMErrorMessage } from "./error";
+
 // report any error to parent frame
 if (window.parent) {
   window.addEventListener("error", (event) => {
     window.parent.postMessage(
       {
         type: "error",
-        message: event.message,
-        error: event.error,
-        stack: event.error.stack,
+        ...({
+          message: event.message,
+          error: event.error,
+        } satisfies ReactVMErrorMessage),
       },
       "*"
     );
