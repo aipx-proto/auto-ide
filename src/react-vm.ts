@@ -1,8 +1,10 @@
 import type { ReactVMErrorMessage } from "./react-vm.types";
 
 // report any error to parent frame
-if (window.parent) {
-  window.addEventListener("error", (event) => {
+window.addEventListener("error", (event) => {
+  safeAppendRootContent(["❌ " + event.message, event.error?.message, event.error?.stack].filter(Boolean).join("\n"));
+
+  if (window.parent) {
     window.parent.postMessage(
       {
         type: "error",
@@ -13,8 +15,8 @@ if (window.parent) {
       },
       "*"
     );
-  });
-}
+  }
+});
 
 const cache = {
   headChildren: [] as Element[],
