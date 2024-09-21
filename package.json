@@ -1,6 +1,6 @@
 {
   "name": "ai-studio-cdk",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "",
   "main": "./dist/cdk.js",
   "module": "./dist/cdk.js",
