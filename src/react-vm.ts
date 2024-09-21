@@ -1,13 +1,16 @@
-function safeAppendRootContent(content: string) {
-  const root = document.getElementById("root");
-  if (root) {
-    let pre = root.querySelector("pre");
-    if (!pre) {
-      pre = document.createElement("pre");
-      root.appendChild(pre);
-    }
-    pre.innerHTML = `${pre.innerHTML}${content}<br/>`;
-  }
+// report any error to parent frame
+if (window.parent) {
+  window.addEventListener("error", (event) => {
+    window.parent.postMessage(
+      {
+        type: "error",
+        message: event.message,
+        error: event.error,
+        stack: event.error.stack,
+      },
+      "*"
+    );
+  });
 }
 
 const cache = {
@@ -199,3 +202,15 @@ Your implementation here...
     modal.showModal();
   }
 });
+
+function safeAppendRootContent(content: string) {
+  const root = document.getElementById("root");
+  if (root) {
+    let pre = root.querySelector("pre");
+    if (!pre) {
+      pre = document.createElement("pre");
+      root.appendChild(pre);
+    }
+    pre.innerHTML = `${pre.innerHTML}${content}<br/>`;
+  }
+}
