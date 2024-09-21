@@ -13,7 +13,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "typings"
   ],
   "scripts": {
     "preview": "npx http-server -p 5200 -a localhost -c-1",
