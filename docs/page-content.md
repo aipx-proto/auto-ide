@@ -9,6 +9,7 @@ Props:
 ```ts
 interface PageHeaderProps {
   fullWidth?: boolean;
+  children?: React.ReactNode;
 }
 ```
 
