@@ -441,7 +441,6 @@ export const ShellMain = (props: ShellMainProps) => {
 const MainLayout = styled.main`
   grid-area: main;
   overflow-y: auto;
-  scrollbar-gutter: stable;
   background: white;
   border-radius: 8px 0 0 0;
   border: 1px solid #e0e0e0;

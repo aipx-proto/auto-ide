@@ -1,3 +1,7 @@
+---
+description: Provides App header and Left navigation. App header has customizable breadcrumb. Left nav has customizable active item.
+---
+
 # AppShell
 
 Basic setup
