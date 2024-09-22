@@ -9,6 +9,7 @@ function App() {
   return (
     <PageGrid>
       <PageHeader
+        fullWidth={true}
         pageTitle="Title"
         toolbar={
           <Toolbar>
