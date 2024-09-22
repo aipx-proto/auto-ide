@@ -1,23 +1,7 @@
 import type { ReactVMErrorMessage } from "./react-vm.types";
 
 // report any error to parent frame
-window.addEventListener("error", (event) => {
-  safeAppendRootContent(["❌ " + event.message, event.error?.message, event.error?.stack].filter(Boolean).join("\n"));
-
-  if (window.parent) {
-    window.parent.postMessage(
-      {
-        type: "error",
-        ...({
-          message: event.message,
-          error: event.error,
-        } satisfies ReactVMErrorMessage),
-      },
-      "*"
-    );
-  }
-});
-
+window.addEventListener("error", handleErrorEvent);
 const cache = {
   headChildren: [] as Element[],
   bodyInnerHTML: "",
@@ -96,7 +80,12 @@ document.onreadystatechange = () => {
       // build file content map
       const sourceScripts = document.querySelectorAll(`script[type="text/babel"]`);
       sourceScripts.forEach(async (sourceScript, index) => {
-        const result = await esbuild.transform(sourceScript.textContent ?? "", { loader: "tsx" });
+        const result = await esbuild.transform(sourceScript.textContent ?? "", { loader: "tsx" }).catch((error) => {
+          handleErrorEvent(new ErrorEvent("JSX compiler error", { message: error.message, error }));
+          return null;
+        });
+        if (!result) return;
+
         const transpiledScript = document.createElement("script");
         transpiledScript.textContent = result.code;
         transpiledScript.type = "module";
@@ -116,5 +105,22 @@ function safeAppendRootContent(content: string) {
       root.appendChild(pre);
     }
     pre.innerHTML = `${pre.innerHTML}${content}<br/>`;
+  }
+}
+
+function handleErrorEvent(errorEvent: ErrorEvent) {
+  safeAppendRootContent(["❌ " + errorEvent.message, errorEvent.error?.message, errorEvent.error?.stack].filter(Boolean).join("\n"));
+
+  if (window.parent) {
+    window.parent.postMessage(
+      {
+        type: "error",
+        ...({
+          message: errorEvent.message,
+          error: errorEvent.error,
+        } satisfies ReactVMErrorMessage),
+      },
+      "*"
+    );
   }
 }
