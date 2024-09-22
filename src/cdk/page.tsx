@@ -67,11 +67,12 @@ const PageHeaderDetailsArea = styled.div`
 `;
 
 export interface PageContentProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 export function PageContent(props: PageContentProps) {
-  return <PageContentLayout>{props.children}</PageContentLayout>;
+  return <PageContentLayout $fullWidth={props.fullWidth}>{props.children}</PageContentLayout>;
 }
 
 export const PageContentLayout = styled.main<{ $fullWidth?: boolean }>`
