@@ -25,6 +25,7 @@ function App() {
         }
       />
       <PageHeader
+        hasBackNav={true}
         pageTitle="Title"
         details={
           <div>

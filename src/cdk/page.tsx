@@ -1,9 +1,11 @@
-import { Title3, tokens } from "@fluentui/react-components";
+import { Button, Title3, tokens } from "@fluentui/react-components";
+import { ArrowLeftRegular } from "@fluentui/react-icons";
 import React from "react";
 import styled from "styled-components";
 
 export interface PageHeaderProps {
   pageTitle: string;
+  hasBackNav?: boolean;
   toolbar?: React.ReactNode;
   details?: React.ReactNode;
   fullWidth?: boolean;
@@ -12,6 +14,7 @@ export function PageHeader(props: PageHeaderProps) {
   return (
     <PageHeaderLayout $fullWidth={props.fullWidth}>
       <PageHeaderTitleArea>
+        {props.hasBackNav ? <NudgedButton appearance="transparent" icon={<ArrowLeftRegular aria-label="Back" />} /> : null}
         <Title3>{props.pageTitle}</Title3>
       </PageHeaderTitleArea>
       <PageHeaderToolbarArea>{props.toolbar}</PageHeaderToolbarArea>
@@ -38,8 +41,14 @@ export const PageHeaderLayout = styled.header<{ $fullWidth?: boolean }>`
   }
 `;
 
+const NudgedButton = styled(Button)`
+  transform: translateY(1px);
+`;
+
 const PageHeaderTitleArea = styled.div`
   grid-area: title;
+  display: flex;
+  align-items: center;
 `;
 
 const PageHeaderToolbarArea = styled.div`

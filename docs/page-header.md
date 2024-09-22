@@ -9,6 +9,7 @@ Props:
 ```ts
 interface PageHeaderProps {
   pageTitle: string;
+  hasBackNav?: boolean;
   toolbar?: React.ReactNode;
   details?: React.ReactNode;
   fullWidth?: boolean;
@@ -25,7 +26,7 @@ export default const App() => <PageGrid>
 </PageGrid>;
 ```
 
-## Full width and details text
+## Full width, has back nav button and details text
 
 ```jsx
 import { PageHeader } from "ai-studio-cdk";
@@ -34,6 +35,7 @@ import { Link } from "@fluentui/react-components";
 export default const App() => <PageGrid>
   <PageHeader
     pageTitle="Title"
+    hasBackNav={true}
     fullWidth={true}
     details={<div>Message providing information to the user with actionable insights. <Link href="#">View documentation</Link></div>}
   />
