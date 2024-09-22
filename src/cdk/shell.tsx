@@ -331,7 +331,7 @@ export const ShellParentNav = (props: ShellNavProps) => {
         <Tab icon={<BeakerAuto />} value="fine-tuning">
           Fine-tuning
         </Tab>
-        <IndentedCaption>Monitor performance</IndentedCaption>
+        <IndentedCaption>Assess performance</IndentedCaption>
         <Tab icon={<DatabaseSearchAuto />} value="tracing">
           Tracing
         </Tab>
