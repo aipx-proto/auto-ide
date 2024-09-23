@@ -49,6 +49,7 @@ import {
   OrganizationFilled,
   OrganizationRegular,
   PanelLeftContractRegular,
+  PanelLeftExpandRegular,
   PromptFilled,
   PromptRegular,
   ProtocolHandlerFilled,
@@ -63,7 +64,7 @@ import {
   ShieldTaskFilled,
   ShieldTaskRegular,
 } from "@fluentui/react-icons";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 
 const AppsAuto = bundleIcon(AppsFilled, AppsRegular);
@@ -96,13 +97,14 @@ export interface AppShellProps {
   children?: React.ReactNode;
 }
 export function AppShell(props: AppShellProps) {
+  const [isLeftNavCollapsed, setIsLeftNavCollapsed] = useState(false);
   const breadcrumbItems = props.breadcrumbs?.map((label, index) => ({ label, href: "#" }));
 
   return (
     <Shell>
-      <RootHeader breadcrumb={breadcrumbItems} />
-      <ShellParentNav activeItem={props.activeItem} />
-      <ShellMain>{props.children}</ShellMain>
+      <RootHeader breadcrumb={breadcrumbItems} isLeftNavCollapsed={isLeftNavCollapsed} onToggleLeftNav={() => setIsLeftNavCollapsed((prev) => !prev)} />
+      {isLeftNavCollapsed ? null : <ShellParentNav activeItem={props.activeItem} />}
+      <ShellMain $fullWidth={isLeftNavCollapsed}>{props.children}</ShellMain>
     </Shell>
   );
 }
@@ -151,13 +153,19 @@ export interface ShellHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
     label: string;
     href?: string;
   }[];
+  isLeftNavCollapsed?: boolean;
+  onToggleLeftNav?: () => void;
 }
 export const RootHeader = (props: ShellHeaderProps) => {
   return (
     <HeaderLayout {...props}>
       <ToolbarLeft>
         <IconHomeLink>
-          <Button appearance="subtle" icon={<PanelLeftContractRegular />} />
+          <Button
+            appearance="subtle"
+            icon={props.isLeftNavCollapsed ? <PanelLeftExpandRegular /> : <PanelLeftContractRegular />}
+            onClick={props.onToggleLeftNav}
+          />
           <HomeLink href="#">
             <img
               width={18}
@@ -434,15 +442,17 @@ const IndentedCaption = styled(Caption1Strong)`
   padding-block: 8px;
 `;
 
-export interface ShellMainProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface ShellMainProps extends React.HTMLAttributes<HTMLDivElement> {
+  $fullWidth?: boolean;
+}
 export const ShellMain = (props: ShellMainProps) => {
   return <MainLayout {...props} />;
 };
-const MainLayout = styled.main`
+const MainLayout = styled.main<{ $fullWidth?: boolean }>`
   grid-area: main;
   overflow-y: auto;
   background: white;
-  border-radius: 8px 0 0 0;
+  border-radius: ${(props) => (props.$fullWidth ? "0" : "8px")} 0 0 0;
   border: 1px solid #e0e0e0;
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.14), 0px 0px 2px 0px rgba(0, 0, 0, 0.12);
 `;
